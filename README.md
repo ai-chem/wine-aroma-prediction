@@ -8,13 +8,13 @@ Dataset `WineAroma.csv` was assembled manually from 78 scientific articles. It c
 The specific chemical composition of each wine in the dataset is described by the concentration of 49 different chemical compounds. Since the number of components can vary from wine to wine, it was decided to represent each wine as a matrix that reflects the composition and concentration of each component. Forty-four key components were selected for flavor prediction because the remaining 5 were extremely rare in the dataset. 
 First, the names of wine components were translated into SMILES using PubChemPy. After that each SMILES was represented as a vector using the Mol2vec software package. Then, a general matrix was formed in which each row corresponded to a specific component, arranged according to donor-acceptor properties. For each wine sample, the rows of this matrix were multiplied by the concentration of the corresponding component. If a component was missing, the corresponding row was reset to zero. This process presented in the file `Pre-processing.ipynb`.
 <p align="center">
-  <img src="Pre-processing/p1.jpg" alt="Conversion of the chemical composition of wine into matrices using Mol2vec representations of molecules" width="900">
+  <img src="Pre_processing/p1.jpg" alt="Conversion of the chemical composition of wine into matrices using Mol2vec representations of molecules" width="900">
 </p>
 
 Thus, for each wine a 44x100 matrix was created, which can be considered as a "black and white image", where each "pixel" reflects the presence of a certain structure in the component and its concentration. The research task was reduced to multi-label image classification, for which convolutional neural networks and transformers were employed.
 
 <p align="center">
-  <img src="Pre-processing/p2.jpg" alt="Workflow: input representation, model training, and evaluation metrics" width="900">
+  <img src="Pre_processing/p2.jpg" alt="Workflow: input representation, model training, and evaluation metrics" width="900">
 </p>
 
 ## Classical ML

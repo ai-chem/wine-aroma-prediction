@@ -20,6 +20,18 @@ In this work, convolutional neural networks (CNNs) were employed to classify win
 A pretrained ResNet architecture was fine-tuned on the wine dataset. This process presented in the file `ResNet.ipynb`. Leveraging pretrained weights allowed for faster convergence and improved generalization, while the fine-tuning step adapted the model to the specific characteristics of the wine composition images.
 A convolutional neural network was designed and trained from scratch. The process of model training is presented in the file `CNN.ipynb`. Several architectural variations were systematically evaluated, and the optimal network configuration was identified based on validation performance. This approach ensured that the model architecture was tailored specifically to the problem at hand, while providing a meaningful comparison to transfer learning methods.
 
+### Performance metrics of neural networks
+
+| Metric        |   CNN | ResNet-18* | ViT-B/16* |
+|:--------------|-----:|-----------:|---------:|
+| CV Accuracy   | 0.780 | 0.756 | 0.756 |
+| CV Loss       | 0.507 | 0.498 | 0.503 |
+| Test Accuracy | 0.804 | 0.778 | 0.778 |
+| Test Loss     | 0.480 | 0.490 | 0.491 |
+
+\* pretrained & fine-tuned on our data.
+
 Together, these experiments highlight the effectiveness of CNN-based approaches and transformer-based models in extracting discriminative features from structured chemical composition data represented as images.
 The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer.
 These findings suggest that representing chemical composition as images is a viable strategy for applying modern deep learning techniques, with CNNs and transformers providing complementary insights into the structure of the data.
+

@@ -37,7 +37,7 @@ A convolutional neural network was designed and trained from scratch. The proces
 | Test Accuracy | 0.804 | 0.778 | 0.778 |
 | Test Loss     | 0.480 | 0.490 | 0.491 |
 
-\* pretrained & fine-tuned on our data.
+\* pretrained & fine-tuned on data.
 
 Together, these experiments highlight the effectiveness of CNN-based approaches and transformer-based models in extracting discriminative features from structured chemical composition data represented as images.
 The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer.

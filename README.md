@@ -43,3 +43,61 @@ Together, these experiments highlight the effectiveness of CNN-based approaches 
 The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer.
 These findings suggest that representing chemical composition as images is a viable strategy for applying modern deep learning techniques, with CNNs and transformers providing complementary insights into the structure of the data.
 
+###Repository Layout and Models 
+
+- **`models/`** holds the pretrained backbones used for transfer learning. These weights are sourced from **Hugging Face** model hubs (e.g., `google/vit-base-patch16-224-in21k` for ViT-B/16 and `microsoft/resnet-18` for ResNet-18).  
+- **`Predict/`** contains everything needed for out-of-the-box inference:
+  - `Predict/predict.py` — standalone script that loads a trained checkpoint and produces predictions.
+  - `Predict/model_best.pt` — the trained model checkpoint (single file).
+
+> Note: for large weight files, use Git LFS.
+
+---
+
+## Inference
+
+> Open `Predict/predict.ipynb` from the repository root in Jupyter Notebook or JupyterLab and run the cells as instructed.
+
+### Single `.npy`
+
+In the notebook, locate the **Single .npy** cell, set the paths, and run it with:
+
+* `--ckpt`: `Predict/model_best.pt`
+* `--input_npy`: path to your `.npy` file (e.g., `data/sample.npy`)
+
+If your notebook defines a helper like `run_predict(...)`, you can call it in a code cell:
+
+```python
+# Example inside a notebook cell
+run_predict(
+    ckpt="Predict/model_best.pt",
+    input_csv=None,
+    output_csv="predictions.csv",
+    input_npy="data/sample.npy",  # if your notebook supports this arg
+)
+```
+
+### Batch via CSV
+
+Create `inference_paths.csv` with a single column `path`:
+
+```csv
+path
+data/sample1.npy
+data/sample2.npy
+```
+
+Then, in the notebook, run the **Batch via CSV** cell with:
+
+* `--ckpt`: `Predict/model_best.pt`
+* `--input_csv`: `inference_paths.csv`
+* `--output_csv`: `predictions.csv`
+
+### Requirements
+
+Install dependencies **before** opening the notebook:
+
+```bash
+pip install -r requirements.txt
+```
+

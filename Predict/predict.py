@@ -11,7 +11,37 @@ from contextlib import nullcontext
 from torch.serialization import add_safe_globals
 import torch.torch_version as _tv
 add_safe_globals([_tv.TorchVersion])
-obj = torch.load(ckpt_path, map_location=device)
+
+DEFAULT_LABEL_NAMES = [
+    "Fruits",
+    "Berries",
+    "Flowers",
+    "Herbs/Spices",
+    "Wood",
+    "Tobacco/Smoke",
+    "Citrus",
+    "Nuts",
+    "Coffee",
+    "Chocolate/Cacao",
+]
+
+def _resolve_label_names(n_classes: int, ckpt_names):
+    """
+    Pick label names from checkpoint if available; otherwise use defaults.
+    If count mismatches, fallback to generic class_i.
+    """
+    # checkpoint-supplied names
+    if isinstance(ckpt_names, (list, tuple)) and len(ckpt_names) == n_classes:
+        return list(map(str, ckpt_names)), True
+
+    # fallback to defaults (only if sizes match)
+    if len(DEFAULT_LABEL_NAMES) == n_classes:
+        return DEFAULT_LABEL_NAMES[:], True
+
+    # final fallback: generic class_i
+    print(f"[WARN] n_classes={n_classes} but have {len(ckpt_names) if ckpt_names is not None else 'None'} ckpt names "
+          f"and {len(DEFAULT_LABEL_NAMES)} default names; using generic class_i.")
+    return [f"class_{i}" for i in range(n_classes)], False
 
 class ConvNet(nn.Module):
     def __init__(self, depth=2, n_classes=10, p=0.2, widths=(64,128,256,512,512)):
@@ -133,11 +163,11 @@ def main():
         ckpt_path, device, depth_arg=args.depth, n_classes_arg=args.n_classes
     )
     threshold = float(thr_ckpt if args.threshold is None else args.threshold)
-
+    cols, _ = _resolve_label_names(n_classes, label_names)
+    
     if args.input_npy:
         arr = np.load(args.input_npy)
         probs, preds = _predict_array(model, device, arr, threshold)
-        cols = label_names if label_names else [f"class_{i}" for i in range(n_classes)]
         df = pd.DataFrame([probs], columns=cols)
         for i, c in enumerate(cols):
             df[f"pred_{c}"] = int(preds[i])
@@ -156,10 +186,9 @@ def main():
         probs, preds = _predict_array(model, device, arr, threshold)
         rows.append((p, probs, preds))
 
-    cols = label_names if label_names else [f"class_{i}" for i in range(n_classes)]
     proba_mat = np.vstack([r[1] for r in rows])
     pred_mat  = np.vstack([r[2] for r in rows]).astype(int)
-
+    
     df_out = pd.DataFrame(proba_mat, columns=cols)
     for i, c in enumerate(cols):
         df_out[f"pred_{c}"] = pred_mat[:, i]
@@ -171,6 +200,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

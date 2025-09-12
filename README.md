@@ -43,6 +43,9 @@ Together, these experiments highlight the effectiveness of CNN-based approaches 
 The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer.
 These findings suggest that representing chemical composition as images is a viable strategy for applying modern deep learning techniques, with CNNs and transformers providing complementary insights into the structure of the data.
 
+## Repository Tree
+
+./ ├─ Predict/ # inference │ ├─ predict.py │ ├─ model_best.pt │ ├─ sample.npy │ ├─ NeuralNetworks/ # DL notebooks + datasets │ ├─ CNN.ipynb │ ├─ ResNet.ipynb │ ├─ Vision_transformer.ipynb │ ├─ X_array.npy │ └─ Y_array.npy ├─ Classical_ML/ # classical ML ├─ DataAnalysis/ # EDA ├─ Pre_processing/ # preprocessing ├─ models/ # HF backbone metadata ├─ requirements.txt └─ README.md
 ## Repository Layout and Models 
 
 - **`models/`** holds the pretrained backbones used for transfer learning. These weights are sourced from **Hugging Face** model hubs (e.g., `google/vit-base-patch16-224-in21k` for ViT-B/16 and `microsoft/resnet-18` for ResNet-18).  

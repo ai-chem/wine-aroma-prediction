@@ -45,7 +45,27 @@ These findings suggest that representing chemical composition as images is a via
 
 ## Repository Tree
 
-./ ├─ Predict/ # inference │ ├─ predict.py │ ├─ model_best.pt │ ├─ sample.npy │ ├─ NeuralNetworks/ # DL notebooks + datasets │ ├─ CNN.ipynb │ ├─ ResNet.ipynb │ ├─ Vision_transformer.ipynb │ ├─ X_array.npy │ └─ Y_array.npy ├─ Classical_ML/ # classical ML ├─ DataAnalysis/ # EDA ├─ Pre_processing/ # preprocessing ├─ models/ # HF backbone metadata ├─ requirements.txt └─ README.md
+```text
+./
+├─ Predict/                 # inference
+│  ├─ predict.py
+│  ├─ model_best.pt
+│  ├─ sample.npy
+│  └─ inference_paths.csv
+├─ NeuralNetworks/          # DL notebooks + datasets
+│  ├─ CNN.ipynb
+│  ├─ ResNet.ipynb
+│  ├─ Vision_transformer.ipynb
+│  ├─ X_array.npy
+│  └─ Y_array.npy
+├─ Classical_ML/            # classical ML
+├─ DataAnalysis/            # EDA
+├─ Pre_processing/          # preprocessing
+├─ models/                  # HF backbone metadata
+├─ requirements.txt
+└─ README.md
+```
+
 ## Repository Layout and Models 
 
 - **`models/`** holds the pretrained backbones used for transfer learning. These weights are sourced from **Hugging Face** model hubs (e.g., `google/vit-base-patch16-224-in21k` for ViT-B/16 and `microsoft/resnet-18` for ResNet-18).  

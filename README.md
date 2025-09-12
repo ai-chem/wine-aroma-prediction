@@ -49,55 +49,57 @@ These findings suggest that representing chemical composition as images is a via
 - **`Predict/`** contains everything needed for out-of-the-box inference:
   - `Predict/predict.py` — standalone script that loads a trained checkpoint and produces predictions.
   - `Predict/model_best.pt` — the trained model checkpoint (single file).
+  - `Predict/sample.npy` — a tiny demo input in NumPy `.npy` format to sanity-check the pipeline.  
+    `NeuralNetworks/X_array.npy` contains the full feature tensor. You can (A) create a **single** demo input from it, or (B) export **many** inputs and run batch inference.
+
+    **Create `Predict/sample.npy` from `NeuralNetworks/X_array.npy` (run from repo root):**
+    ```bash
+    python - <<'PY'
+    import os, numpy as np
+    X = np.load('NeuralNetworks/X_array.npy', allow_pickle=False)
+    x = X[0]  # choose an index here
+
+    # Convert to [H, W] if stored as [1, H, W] or [H, W, 1]
+    if x.ndim == 3 and x.shape[0] == 1:
+        x = x[0]
+    elif x.ndim == 3 and x.shape[-1] == 1:
+        x = x[..., 0]
+
+    x = x.astype('float32', copy=False)  # model expects float32
+    os.makedirs('Predict', exist_ok=True)
+    np.save('Predict/sample.npy', x)
+    print('Saved Predict/sample.npy', x.shape, x.dtype)
+    PY
+    ```
 
 > Note: for large weight files, use Git LFS.
 
 ---
 
-## Inference
-
-> Open `Predict/predict.ipynb` from the repository root in Jupyter Notebook or JupyterLab and run the cells as instructed.
-
-### Single `.npy`
-
-In the notebook, locate the **Single .npy** cell, set the paths, and run it with:
-
-* `--ckpt`: `Predict/model_best.pt`
-* `--input_npy`: path to your `.npy` file (e.g., `data/sample.npy`)
-
-If your notebook defines a helper like `run_predict(...)`, you can call it in a code cell:
-
-```python
-# Example inside a notebook cell
-run_predict(
-    ckpt="Predict/model_best.pt",
-    input_csv=None,
-    output_csv="predictions.csv",
-    input_npy="data/sample.npy",  # if your notebook supports this arg
-)
-```
-
-### Batch via CSV
-
-Create `inference_paths.csv` with a single column `path`:
-
-```csv
-path
-data/sample1.npy
-data/sample2.npy
-```
-
-Then, in the notebook, run the **Batch via CSV** cell with:
-
-* `--ckpt`: `Predict/model_best.pt`
-* `--input_csv`: `inference_paths.csv`
-* `--output_csv`: `predictions.csv`
-
-### Requirements
-
-Install dependencies **before** opening the notebook:
+## Quickstart (Bash)
 
 ```bash
-pip install -r requirements.txt
-```
+# 1) Clone and enter the repo
+git clone https://github.com/heliamphora-ch/wine-aroma-data
+cd wine-aroma-data
+
+# 2) Pull large files via Git LFS (model weights)
+git lfs install
+git lfs pull
+# (optional) git lfs checkout
+
+# 3) Verify the weights exist and are not tiny (should be large, e.g., >100MB)
+ls -lh Predict/model_best.pt
+
+# 4) Install dependencies (in your venv/conda env)
+pip install torch numpy pandas  # optional: pip install pyarrow
+
+# 5) Run single-sample inference (from repo root)
+python Predict/predict.py --ckpt Predict/model_best.pt --input_npy Predict/sample.npy --device cpu
+
+# 6) Inspect the result
+ls -lh predictions.csv
+head -n 5 predictions.csv
+
+
 

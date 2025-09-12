@@ -8,6 +8,11 @@ from torch import nn
 import torch.nn.functional as F
 from contextlib import nullcontext
 
+from torch.serialization import add_safe_globals
+import torch.torch_version as _tv
+add_safe_globals([_tv.TorchVersion])
+
+
 class ConvNet(nn.Module):
     def __init__(self, depth=2, n_classes=10, p=0.2, widths=(64,128,256,512,512)):
         super().__init__()
@@ -166,6 +171,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 

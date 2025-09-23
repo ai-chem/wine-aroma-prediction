@@ -51,7 +51,6 @@ These findings suggest that representing chemical composition as images is a via
 │  ├─ predict.py
 │  ├─ model_best.pt
 │  ├─ sample.npy
-│  └─ inference_paths.csv
 ├─ NeuralNetworks/          # DL notebooks + datasets
 │  ├─ CNN.ipynb
 │  ├─ ResNet.ipynb

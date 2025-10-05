@@ -26,21 +26,21 @@ Transformer-based model were explored. A pretrained Vision Transformer was fine-
 ## Convolutional Neural Networks
 In this work, convolutional neural networks (CNNs) were employed to classify wine samples based on their chemical composition. The input data consisted of pre-computed matrices representing the chemical properties of each wine sample, which were transformed into grayscale images. This representation enabled the use of modern computer vision techniques for pattern recognition in the data.
 A pretrained ResNet architecture was fine-tuned on the wine dataset. This process presented in the file `ResNet.ipynb`. Leveraging pretrained weights allowed for faster convergence and improved generalization, while the fine-tuning step adapted the model to the specific characteristics of the wine composition images.
-A convolutional neural network was designed and trained from scratch. The process of model training is presented in the file `CNN.ipynb`. Several architectural variations were systematically evaluated, and the optimal network configuration was identified based on validation performance. This approach ensured that the model architecture was tailored specifically to the problem at hand, while providing a meaningful comparison to transfer learning methods.
+A convolutional neural network was designed and trained from scratch. The process of model training is presented in the file `CNN_final.ipynb`. Several architectural variations were systematically evaluated, and the optimal network configuration was identified based on validation performance. This approach ensured that the model architecture was tailored specifically to the problem at hand, while providing a meaningful comparison to transfer learning methods.
 
 ### Performance metrics of neural networks
 
 | Metric        |   CNN | ResNet-18* | ViT-B/16* |
 |:--------------|-----:|-----------:|---------:|
-| CV Accuracy   | 0.780 | 0.756 | 0.756 |
+| CV Accuracy   | 0.780 | 0.756 | 0.749 |
 | CV Loss       | 0.507 | 0.498 | 0.503 |
-| Test Accuracy | 0.804 | 0.778 | 0.778 |
+| Test Accuracy | 0.8   | 0.778 | 0.762 |
 | Test Loss     | 0.480 | 0.490 | 0.491 |
 
 \* pretrained & fine-tuned on data.
 
 Together, these experiments highlight the effectiveness of CNN-based approaches and transformer-based models in extracting discriminative features from structured chemical composition data represented as images.
-The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer.
+The CNN architecture showed higher accuracy results, but exhibited a higher degree of overfitting compared to ResNet and Vision Transformer (these weights are sourced from **Hugging Face** model hubs (e.g., `google/vit-base-patch16-224-in21k` for ViT-B/16 and `microsoft/resnet-18` for ResNet-18).
 These findings suggest that representing chemical composition as images is a viable strategy for applying modern deep learning techniques, with CNNs and transformers providing complementary insights into the structure of the data.
 
 ## Repository Tree
@@ -48,9 +48,8 @@ These findings suggest that representing chemical composition as images is a via
 ```text
 ./
 ├─ Predict/                 # inference
-│  ├─ predict.py
-│  ├─ model_best.pt
-│  ├─ sample.npy
+│  ├─ Predict.py
+│  ├─ cnn_weights.pt
 ├─ NeuralNetworks/          # DL notebooks + datasets
 │  ├─ CNN.ipynb
 │  ├─ ResNet.ipynb
@@ -67,32 +66,10 @@ These findings suggest that representing chemical composition as images is a via
 
 ## Repository Layout and Models 
 
-- **`models/`** holds the pretrained backbones used for transfer learning. These weights are sourced from **Hugging Face** model hubs (e.g., `google/vit-base-patch16-224-in21k` for ViT-B/16 and `microsoft/resnet-18` for ResNet-18).  
 - **`Predict/`** contains everything needed for out-of-the-box inference:
-  - `Predict/predict.py` — standalone script that loads a trained checkpoint and produces predictions.
-  - `Predict/model_best.pt` — the trained model checkpoint (single file).
-  - `Predict/sample.npy` — a tiny demo input in NumPy `.npy` format to sanity-check the pipeline.  
-    `NeuralNetworks/X_array.npy` contains the full feature tensor. You can (A) create a **single** demo input from it, or (B) export **many** inputs and run batch inference.
-
-    **Create `Predict/sample.npy` from `NeuralNetworks/X_array.npy` (run from repo root):**
-    ```bash
-    python - <<'PY'
-    import os, numpy as np
-    X = np.load('NeuralNetworks/X_array.npy', allow_pickle=False)
-    x = X[0]  # choose an index here
-
-    # Convert to [H, W] if stored as [1, H, W] or [H, W, 1]
-    if x.ndim == 3 and x.shape[0] == 1:
-        x = x[0]
-    elif x.ndim == 3 and x.shape[-1] == 1:
-        x = x[..., 0]
-
-    x = x.astype('float32', copy=False)  # model expects float32
-    os.makedirs('Predict', exist_ok=True)
-    np.save('Predict/sample.npy', x)
-    print('Saved Predict/sample.npy', x.shape, x.dtype)
-    PY
-    ```
+  - `Predict/Predict.py` — standalone script that loads a trained checkpoint and produces predictions.
+  - `Predict/cnn_weights.pt` — the trained model checkpoint (single file).
+  - `NeuralNetworks/X_array.npy` contains the full feature tensor. You can (A) create a **single** demo input from it, or (B) export **many** inputs and run batch inference.
 
 > Note: for large weight files, use Git LFS.
 
@@ -110,18 +87,30 @@ git lfs install
 git lfs pull
 # (optional) git lfs checkout
 
-# 3) Verify the weights exist and are not tiny (should be large, e.g., >100MB)
-ls -lh Predict/model_best.pt
+# 3) Verify weights are present (size typically tens of MB)
+ls -lh Predict/cnn_weights.pt
 
 # 4) Install dependencies (in your venv/conda env)
 pip install torch numpy pandas  # optional: pip install pyarrow
 
-# 5) Run single-sample inference (from repo root)
-python Predict/predict.py --ckpt Predict/model_best.pt --input_npy Predict/sample.npy --device cpu
+# 5A) Make a one-off sample.npy and run it the standard way --input npy
+python - <<'PY'
+import os, numpy as np
+X = np.load('NeuralNetworks/X_array.npy', allow_pickle=False)
+x = X[90]  # choose any index
+# ensure [H,W] or [1,H,W]
+if x.ndim == 3 and x.shape[0] == 1:  x = x[0]
+elif x.ndim == 3 and x.shape[-1] == 1: x = x[..., 0]
+x = x.astype('float32', copy=False)
+os.makedirs('Predict', exist_ok=True)
+np.save('Predict/sample.npy', x)
+print('Saved Predict/sample.npy', x.shape, x.dtype)
+PY
 
-# 6) Inspect the result
-ls -lh predictions.csv
-head -n 5 predictions.csv
-
+# 5B) Run single-sample inference (from repo root)
+python Predict/Predict.py \
+  --ckpt Predict/cnn_weights.pt \
+  --input_npy Predict/sample.npy \
+  --device auto
 
 

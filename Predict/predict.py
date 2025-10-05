@@ -26,10 +26,7 @@ DEFAULT_LABEL_NAMES = [
 ]
 
 def _resolve_label_names(n_classes: int, ckpt_names):
-    """
-    Pick label names from checkpoint if available; otherwise use defaults.
-    If count mismatches, fallback to generic class_i.
-    """
+
     # checkpoint-supplied names
     if isinstance(ckpt_names, (list, tuple)) and len(ckpt_names) == n_classes:
         return list(map(str, ckpt_names)), True

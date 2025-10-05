@@ -34,7 +34,7 @@ A convolutional neural network was designed and trained from scratch. The proces
 |:--------------|-----:|-----------:|---------:|
 | CV Accuracy   | 0.780 | 0.756 | 0.749 |
 | CV Loss       | 0.507 | 0.498 | 0.503 |
-| Test Accuracy | 0.8   | 0.778 | 0.762 |
+| Test Accuracy | 0.798   | 0.778 | 0.762 |
 | Test Loss     | 0.480 | 0.490 | 0.491 |
 
 \* pretrained & fine-tuned on data.
